@@ -1,0 +1,84 @@
+---
+title: "Homework 2"
+author: "Mengyu Zhang"
+date: "9/25/2019"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(readxl)
+```
+
+# Problem 1
+
+### Read and clean the Mr. Trash Wheel sheet
+* specify the sheet in the Excel file and to omit non-data entries (rows with notes / figures; columns containing notes) using arguments in `read_excel`
+* use reasonable variable names
+* omit rows that do not include dumpster-specific data
+* round the number of sports balls to the nearest integer and converts the result to an integer variable (using `as.integer`)
+```{r read and clean Mr. Trash Wheel sheet}
+df_trash = read_excel(
+  path = "./data/HealthyHarborWaterWheelTotals2018-7-28.xlsx", 
+  sheet = "Mr. Trash Wheel", 
+  range = "A2:N338")
+trash = df_trash %>% 
+  janitor::clean_names() %>% 
+  rename(weight = weight_tons, volume = volume_cubic_yards) %>% 
+  drop_na(dumpster) %>% 
+  mutate(sports_balls = as.integer(round(sports_balls)))
+
+trash
+```
+
+### Read and clean precipitation data for 2017 and 2018
+
+For each, omit rows without precipitation data and add a variable year. Next, combine precipitation datasets and convert month to a character variable (the variable `month.name` is built into R and should be useful).
+
+```{r}
+#import sheet 2017 precipitation
+precpt_2017 = read_excel("data/HealthyHarborWaterWheelTotals2018-7-28.xlsx", sheet = "2017 Precipitation", skip = 1) %>%
+  janitor::clean_names() %>% 
+  drop_na(total, month) %>% 
+  mutate(year = rep(2017))
+
+#import sheet 2018 precipitation
+precpt_2018 = read_excel("data/HealthyHarborWaterWheelTotals2018-7-28.xlsx", sheet = "2018 Precipitation", skip = 1) %>%
+  janitor::clean_names() %>% 
+  drop_na(total, month) %>% 
+  mutate(year = rep(2018))
+
+#combine two sheets
+precpt_data = bind_rows(precpt_2017, precpt_2018) %>% 
+  mutate(month = month.name[month]) %>% 
+  select(year, month, total)
+
+precpt_data
+```
+
+### Description of Data
+
+* Dataset trash
+
+The number of observation is `r nrow(trash)`. It includes the `r names(trash[, 4])` of collection,  the `r names(trash[, 5])` and `r names(trash[, 6])` of the trash that each dumpter recieved, and the amount of different types of trash such as `r str_to_lower(names(df_trash[, 7:13]))`. 
+
+* Dataset precpt_2017 and precpt_2018
+
+The number observation in precpt_2017 and precpt_2018 are `r nrow(precpt_2017)` and `r nrow(precpt_2018)` respectively. They both includes the `r names(precpt_data[, 3])` amount of precipitation in each month between January 2017 and July 2018.
+
+The total precipitation in 2018 is `r sum(pull(precpt_2018, total))`. 
+
+The median number of sports balls in a dumpster in 2017 is `r median(pull(subset(trash, year == 2017), sports_balls))`.
+
+# Problem 2
+
+### Clean the Data in pols-month.csv
+
+```{r}
+pols_month = read_csv("./data/pols-month.csv") %>%
+  janitor::clean_names() %>% 
+  separate((col = mon, into = c("year", "month", "day"))
+```
+
