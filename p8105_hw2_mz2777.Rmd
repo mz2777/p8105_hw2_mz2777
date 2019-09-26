@@ -24,6 +24,7 @@ df_trash = read_excel(
   path = "./data/HealthyHarborWaterWheelTotals2018-7-28.xlsx", 
   sheet = "Mr. Trash Wheel", 
   range = "A2:N338")
+
 trash = df_trash %>% 
   janitor::clean_names() %>% 
   rename(weight = weight_tons, volume = volume_cubic_yards) %>% 
@@ -37,7 +38,7 @@ trash
 
 For each, omit rows without precipitation data and add a variable year. Next, combine precipitation datasets and convert month to a character variable (the variable `month.name` is built into R and should be useful).
 
-```{r}
+```{r Read and clean precipitation data for 2017 and 2018}
 #import sheet 2017 precipitation
 precpt_2017 = read_excel("data/HealthyHarborWaterWheelTotals2018-7-28.xlsx", sheet = "2017 Precipitation", skip = 1) %>%
   janitor::clean_names() %>% 
@@ -75,10 +76,68 @@ The median number of sports balls in a dumpster in 2017 is `r median(pull(subset
 # Problem 2
 
 ### Clean the Data in pols-month.csv
+Use `separate()` to break up the variable `mon` into integer variables `year`, `month`, and `day`; replace month number with month name; create a `president` variable taking values `gop` and `dem`, and remove `prez_dem` and `prez_gop`; and remove the `day` variable.
 
-```{r}
-pols_month = read_csv("./data/pols-month.csv") %>%
+```{r Clean the Data in pols-month.csv}
+pols = read_csv("./data/pols-month.csv") %>%
   janitor::clean_names() %>% 
-  separate((col = mon, into = c("year", "month", "day"))
+  separate(col = mon, into = c("year", "month", "day")) %>% 
+  mutate(month = as.integer(month),
+         month = month.name[month],
+         president = recode(prez_gop, `0` = "dem", `1` = "gop")) %>% 
+  select(-prez_dem, -prez_gop, -day)
+
+pols
 ```
 
+
+### Clean the Data in snp.csv
+
+```{r Clean the Data in snp.csv}
+snp = read_csv("data/snp.csv") %>%
+  janitor::clean_names() %>%
+  separate(col = date, into = c("month", "day", "year")) %>%
+  select(year, month, close) %>%
+  mutate(month = as.integer(month)) %>% 
+  arrange(year, month) %>% 
+  mutate(month = month.name[month])
+
+snp
+```
+
+### Tidy the `unemployment` Data
+
+This process will involve switching from “wide” to “long” format; ensuring that key variables have the same name; and ensuring that key variables take the same values.
+
+```{r Tidy the Unemployment Data}
+unemployment = read_csv("data/unemployment.csv") %>%
+  pivot_longer(
+    Jan:Dec,
+    names_to = "month",
+    values_to = "pct_unemployment"
+    ) %>%
+  mutate(month = match(month,month.abb),
+         month = month.name[month],
+         Year = as.character(Year)) %>% 
+  janitor::clean_names()
+```
+
+### Join the datasets
+Join the datasets by merging snp into pols, and merging unemployment into the result. Explain briefly what each dataset contained, and describe the resulting dataset (e.g. give the dimension, range of years, and names of key variables).
+
+```{r Join the datasets}
+df_join = left_join(pols, snp, by = c("year","month"))
+df_join = left_join(df_join, unemployment, by = c("year","month"))
+df_join
+```
+
+The dimension of `pols` is `r nrow(pols)` observations of `r ncol(pols)`. The range of `year` is `r range(pull(pols, year))`. Names of key variables are `r names(pols[, 3:9])`.
+
+The dimension of `snp` is `r nrow(snp)` observations of `r ncol(snp)`. The range of `year` is `r range(pull(snp, year))`. Name of key variable is `r names(snp[, 3])`.
+
+The dimension of `unemployment` is `r nrow(unemployment)` observations of `r ncol(unemployment)`. The range of `year` is `r range(pull(unemployment, year))`. Name of key variable is `r names(unemployment[, 3])`.
+
+The dimension of `df_join` is `r nrow(df_join)` observations of `r ncol(df_join)`. The range of `year` is `r range(pull(df_join, year))`. Name of key variable is `r names(df_join[, 3:11])`.
+
+
+ 
