@@ -22,8 +22,8 @@ library(readxl)
 ```{r read and clean Mr. Trash Wheel sheet}
 df_trash = read_excel(
   path = "./data/HealthyHarborWaterWheelTotals2018-7-28.xlsx", 
-  sheet = "Mr. Trash Wheel", 
-  range = "A2:N338")
+  sheet = "Mr. Trash Wheel") %>% 
+  select(-15)
 
 trash = df_trash %>% 
   janitor::clean_names() %>% 
@@ -139,5 +139,55 @@ The dimension of `unemployment` is `r nrow(unemployment)` observations of `r nco
 
 The dimension of `df_join` is `r nrow(df_join)` observations of `r ncol(df_join)`. The range of `year` is `r range(pull(df_join, year))`. Name of key variable is `r names(df_join[, 3:11])`.
 
+# Problem 3
+### Clean the Data
+```{r}
+#clean the data
+baby_names = read_csv("data/Popular_Baby_Names.csv") %>%
+  janitor::clean_names() %>%
+  rename("first_name" = childs_first_name) %>%
+  mutate(first_name = str_to_lower(first_name)) %>%  #make string variables in lower case over time
+  distinct()
 
- 
+```
+
+### Show the rank in popularity of the name “Olivia” as a female baby name
+```{r}
+#olivia
+olivia = baby_names %>% 
+  filter(first_name == "olivia", gender == "FEMALE") %>% 
+  select(-gender, -first_name) %>% 
+  arrange(year_of_birth)
+
+olivia
+```
+
+### The Most Popular Name among Male Children
+
+```{r}
+#the most popular name among male children
+
+male_pop = baby_names %>% 
+  filter(rank == 1, gender == "MALE") %>% 
+  select(-gender, -rank) %>% 
+  arrange(year_of_birth) %>% 
+  mutate(first_name = str_to_title(first_name))
+
+male_pop
+```
+
+### Scatter Plot
+For male, white non-hispanic children born in 2016, produce a scatter plot showing the number of children with a name (y axis) against the rank in popularity of that name (x axis).
+
+```{r}
+scatter_plot = baby_names %>% 
+  filter(
+    ethnicity == "WHITE NON HISPANIC", 
+    gender == "MALE",
+    year_of_birth == "2016"
+    )
+  
+ggplot(scatter_plot, aes(x = rank, y = count)) + 
+  geom_point()
+```
+
