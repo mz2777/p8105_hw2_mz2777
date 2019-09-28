@@ -84,7 +84,7 @@ pols = read_csv("./data/pols-month.csv") %>%
   separate(col = mon, into = c("year", "month", "day")) %>% 
   mutate(month = as.integer(month),
          month = month.name[month],
-         president = recode(prez_gop, `0` = "dem", `1` = "gop")) %>% 
+         president = recode(prez_dem, `1` = "dem", `0` = "gop")) %>% 
   select(-prez_dem, -prez_gop, -day)
 
 pols
