@@ -42,7 +42,7 @@ For each, omit rows without precipitation data and add a variable year. Next, co
 #import sheet 2017 precipitation
 precpt_2017 = read_excel("data/HealthyHarborWaterWheelTotals2018-7-28.xlsx", sheet = "2017 Precipitation", skip = 1) %>%
   janitor::clean_names() %>% 
-  drop_na(total, month) %>% 
+  drop_na(month) %>% 
   mutate(year = rep(2017))
 
 #import sheet 2018 precipitation
@@ -146,7 +146,11 @@ The dimension of `df_join` is `r nrow(df_join)` observations of `r ncol(df_join)
 baby_names = read_csv("data/Popular_Baby_Names.csv") %>%
   janitor::clean_names() %>%
   rename("first_name" = childs_first_name) %>%
-  mutate(first_name = str_to_lower(first_name)) %>%  #make string variables in lower case over time
+  mutate(first_name = str_to_lower(first_name),
+         ethnicity = recode(ethnicity, 
+                "ASIAN AND PACI" = "ASIAN AND PACIFIC ISLANDER",
+                "BLACK NON HISP" = "BLACK NON HISPANIC",
+                "WHITE NON HISP" = "WHITE NON HISPANIC")) %>% 
   distinct()
 
 ```
@@ -156,7 +160,10 @@ baby_names = read_csv("data/Popular_Baby_Names.csv") %>%
 #olivia
 olivia = baby_names %>% 
   filter(first_name == "olivia", gender == "FEMALE") %>% 
-  select(-gender, -first_name) %>% 
+  select(-gender, -first_name, -count) %>% 
+  pivot_wider(
+    names_from = "ethnicity", 
+    values_from = "rank") %>% 
   arrange(year_of_birth)
 
 olivia
@@ -169,9 +176,12 @@ olivia
 
 male_pop = baby_names %>% 
   filter(rank == 1, gender == "MALE") %>% 
-  select(-gender, -rank) %>% 
-  arrange(year_of_birth) %>% 
-  mutate(first_name = str_to_title(first_name))
+  select(-gender, -rank, -count) %>% 
+  mutate(first_name = str_to_title(first_name)) %>% 
+  pivot_wider(
+    names_from = "ethnicity", 
+    values_from = "first_name") %>% 
+  arrange(year_of_birth) 
 
 male_pop
 ```
