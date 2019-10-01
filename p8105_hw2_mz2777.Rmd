@@ -69,7 +69,7 @@ The number of observation is `r nrow(trash)`. It includes the `r names(trash[, 4
 
 * Dataset precpt_2017 and precpt_2018
 
-The number observation in precpt_2017 and precpt_2018 are `r nrow(precpt_2017)` and `r nrow(precpt_2018)` respectively. They both includes the `r names(precpt_data[, 3])` amount of precipitation in each month between January 2017 and July 2018.
+The number observation in precpt_2017 and precpt_2018 are `r nrow(precpt_2017)` and `r nrow(precpt_2018)` respectively. They both includes the `r names(precpt_data[, 3])` amount of precipitation in each month between January 2017 and December 2018.
 
 The total precipitation in 2018 is `r sum(pull(precpt_2018, total))`. 
 
