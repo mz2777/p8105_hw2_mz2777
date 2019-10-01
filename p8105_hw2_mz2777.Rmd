@@ -21,9 +21,11 @@ library(readxl)
 * round the number of sports balls to the nearest integer and converts the result to an integer variable (using `as.integer`)
 ```{r read and clean Mr. Trash Wheel sheet}
 df_trash = read_excel(
-  path = "./data/HealthyHarborWaterWheelTotals2018-7-28.xlsx", 
+  path = "./data/Trash-Wheel-Collection-Totals-8-6-19.xlsx", 
   sheet = "Mr. Trash Wheel") %>% 
-  select(-15)
+  select(-(15:17))
+
+
 
 trash = df_trash %>% 
   janitor::clean_names() %>% 
@@ -48,7 +50,7 @@ precpt_2017 = read_excel("data/HealthyHarborWaterWheelTotals2018-7-28.xlsx", she
 #import sheet 2018 precipitation
 precpt_2018 = read_excel("data/HealthyHarborWaterWheelTotals2018-7-28.xlsx", sheet = "2018 Precipitation", skip = 1) %>%
   janitor::clean_names() %>% 
-  drop_na(total, month) %>% 
+  drop_na(month) %>% 
   mutate(year = rep(2018))
 
 #combine two sheets
