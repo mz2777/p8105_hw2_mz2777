@@ -42,13 +42,13 @@ For each, omit rows without precipitation data and add a variable year. Next, co
 
 ```{r Read and clean precipitation data for 2017 and 2018}
 #import sheet 2017 precipitation
-precpt_2017 = read_excel("data/HealthyHarborWaterWheelTotals2018-7-28.xlsx", sheet = "2017 Precipitation", skip = 1) %>%
+precpt_2017 = read_excel("data/Trash-Wheel-Collection-Totals-8-6-19.xlsx", sheet = "2017 Precipitation", skip = 1) %>%
   janitor::clean_names() %>% 
   drop_na(month) %>% 
   mutate(year = rep(2017))
 
 #import sheet 2018 precipitation
-precpt_2018 = read_excel("data/HealthyHarborWaterWheelTotals2018-7-28.xlsx", sheet = "2018 Precipitation", skip = 1) %>%
+precpt_2018 = read_excel("data/Trash-Wheel-Collection-Totals-8-6-19.xlsx", sheet = "2018 Precipitation", skip = 1) %>%
   janitor::clean_names() %>% 
   drop_na(month) %>% 
   mutate(year = rep(2018))
