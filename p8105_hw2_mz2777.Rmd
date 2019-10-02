@@ -7,7 +7,6 @@ output: github_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-
 library(tidyverse)
 library(readxl)
 ```
@@ -24,8 +23,6 @@ df_trash = read_excel(
   path = "./data/Trash-Wheel-Collection-Totals-8-6-19.xlsx", 
   sheet = "Mr. Trash Wheel") %>% 
   select(-(15:17))
-
-
 
 trash = df_trash %>% 
   janitor::clean_names() %>% 
@@ -168,7 +165,11 @@ olivia = baby_names %>%
     values_from = "rank") %>% 
   arrange(year_of_birth)
 
-olivia
+knitr::kable(
+  olivia,
+  align = 'ccccc',
+  format="markdown", 
+  caption = "Rank in Popularity of the Name “Olivia”")
 ```
 
 ### The Most Popular Name among Male Children
@@ -185,7 +186,11 @@ male_pop = baby_names %>%
     values_from = "first_name") %>% 
   arrange(year_of_birth) 
 
-male_pop
+knitr::kable(
+  male_pop,
+  align = 'ccccc',
+  format="markdown", 
+  caption = "The Most Popular Name among Male Children")
 ```
 
 ### Scatter Plot
