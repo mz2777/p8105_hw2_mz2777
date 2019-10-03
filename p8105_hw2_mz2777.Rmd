@@ -30,7 +30,8 @@ trash = df_trash %>%
   drop_na(dumpster) %>% 
   mutate(sports_balls = as.integer(round(sports_balls)))
 
-trash
+knitr::kable(trash[1:10,],
+             caption = "* Only show first 10 rows of the table.")
 ```
 
 ### Read and clean precipitation data for 2017 and 2018
@@ -55,7 +56,8 @@ precpt_data = bind_rows(precpt_2017, precpt_2018) %>%
   mutate(month = month.name[month]) %>% 
   select(year, month, total)
 
-precpt_data
+knitr::kable(precpt_data[1:10,],
+             caption = "* Only show first 10 rows of the table.")
 ```
 
 ### Description of Data
@@ -86,7 +88,8 @@ pols = read_csv("./data/pols-month.csv") %>%
          president = recode(prez_dem, `1` = "dem", `0` = "gop")) %>% 
   select(-prez_dem, -prez_gop, -day)
 
-pols
+knitr::kable(pols[1:10,],
+             caption = "* Only show first 10 rows of the table.")
 ```
 
 
@@ -101,7 +104,8 @@ snp = read_csv("data/snp.csv") %>%
   arrange(year, month) %>% 
   mutate(month = month.name[month])
 
-snp
+knitr::kable(snp[1:10,],
+             caption = "* Only show first 10 rows of the table.")
 ```
 
 ### Tidy the `unemployment` Data
@@ -127,7 +131,6 @@ Join the datasets by merging snp into pols, and merging unemployment into the re
 ```{r Join the datasets}
 df_join = left_join(pols, snp, by = c("year","month"))
 df_join = left_join(df_join, unemployment, by = c("year","month"))
-df_join
 ```
 
 The dimension of `pols` is `r nrow(pols)` observations of `r ncol(pols)`. The range of `year` is `r range(pull(pols, year))`. Names of key variables are `r names(pols[, 3:9])`.
@@ -167,8 +170,8 @@ olivia = baby_names %>%
 knitr::kable(
   olivia,
   align = 'ccccc',
-  format="markdown", 
-  caption = "Rank in Popularity of the Name “Olivia”")
+  format="markdown"
+  )
 ```
 
 ### The Most Popular Name among Male Children
@@ -187,8 +190,8 @@ male_pop = baby_names %>%
 knitr::kable(
   male_pop,
   align = 'ccccc',
-  format="markdown", 
-  caption = "The Most Popular Name among Male Children")
+  format="markdown"
+  )
 ```
 
 ### Scatter Plot
